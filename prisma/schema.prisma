@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+model User {
+  id         String     @id @default(uuid())
+  email      String     @unique
+  password   String     // Hashed password
+  createdAt  DateTime   @default(now())
+  imageJobs  ImageJob[]
+}
+model ProcessingPreset {
+  id           Int        @id @default(autoincrement())
+  name         String     // e.g., "thumbnail", "instagram_filter", "compression_only"
+  targetWidth  Int
+  targetHeight Int
+  format       String     // "webp", "png", "jpeg"
+  effects      Json       // e.g., { "blur": 5, "grayscale": true }
+  imageJobs    ImageJob[]
+}
+model ImageJob {
+  id                Int               @id @default(autoincrement())
+  status            JobStatus         @default(QUEUED)
+  originalImageDir  String            
+  resultDir         String?           // Nullable until COMPLETED
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Foreign Keys mapping the associations
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  presetId          Int
+  preset            ProcessingPreset  @relation(fields: [presetId], references: [id])
+
+  // Performance Optimization: Indexes make searching user galleries fast
+  @@index([userId])
+  @@index([status])
+}

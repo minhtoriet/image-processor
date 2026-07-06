@@ -1,0 +1,1 @@
+// Independent Background Worker script

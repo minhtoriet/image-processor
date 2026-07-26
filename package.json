@@ -13,17 +13,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/type-provider-typebox": "^6.1.0",
     "@prisma/client": "^7.8.0",
+    "@sinclair/typebox": "^0.34.52",
     "bullmq": "^5.79.2",
-    "dotenv": "^17.4.2",
     "fastify": "^5.9.0",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
-    "prisma": "^7.8.0",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.9.0",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
   "allowScripts": {
     "@prisma/engines@7.8.0": true,

@@ -14,6 +14,11 @@ const imageQueue = new Queue('image-processing-queue', {
   connection: { url: process.env.REDIS_URL || 'redis://127.0.0.1:6379' }
 });
 
+//healthcheck
+fastify.get("/healthcheck",async function(){
+  return {status: "OK"};
+});
+
 // 3. Define your upload trigger route
 fastify.post('/api/upload', async (request, reply) => {
   const jobId = Math.random().toString(36).substring(7); // Temporary random ID mock

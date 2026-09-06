@@ -1,12 +1,24 @@
 // Equivalent to Entity Framework DbContext setup
-import { PrismaClient } from "@prisma/client/extension";
+import 'dotenv/config'
+import { PrismaClient } from "../generated/prisma";
+import { PrismaNeon } from '@prisma/adapter-neon'
 
-const globalForPrisma = globalThis as unknown as {prisma: PrismaClient}
+const prismaClientSingleton = () => {
+  const connectionString =  process.env.DATABASE_URL
+  const adapter = new PrismaNeon({connectionString});
 
-export const prisma = 
-    globalForPrisma.prisma || 
-    new PrismaClient({
-        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    });
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    adapter,
+  })
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+declare global {
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
+}
+
+export const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.prismaGlobal = prisma
+}

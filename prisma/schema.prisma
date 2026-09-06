@@ -36,7 +36,8 @@ model ImageJob {
   id                Int               @id @default(autoincrement())
   status            JobStatus         @default(QUEUED)
   originalImageDir  String            
-  resultDir         String?           // Nullable until COMPLETED
+  resultTextUrl  String?   // .html or .txt file in storage
+  resultImageUrl String?   // rendered .png
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 

@@ -1,5 +1,4 @@
 // The actual controller logic
-// The actual controller logic
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { randomUUID } from "node:crypto";
 

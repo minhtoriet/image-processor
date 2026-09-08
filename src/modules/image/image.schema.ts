@@ -1,4 +1,6 @@
 // JSON Input Validation rules (instead of Data Annotations)
+import Type from 'typebox';
+
 export const uploadSchema = {
     body : {
         type : 'object',
@@ -13,6 +15,13 @@ export const uploadSchema = {
             properties: {
                 success: {type: 'boolean'},
                 jobId: {type: 'string'}
+            }
+        },
+        500: {
+            type:'object',
+            properties:{
+                success:{type:false},
+                content:'interal server error'
             }
         }
     }

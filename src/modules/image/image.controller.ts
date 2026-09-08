@@ -12,8 +12,8 @@ export async function handleImageUpload(
 ){
     const {imageName} = request.body;
     const jobId = randomUUID();
-    //business logic in services\
-
+    //business logic in services
+    
     //just send a 202 back
     return reply.code(202).send({success:true});
 }

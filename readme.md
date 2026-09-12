@@ -33,10 +33,26 @@ image-processing-backend/
 │   │       ├── index.ts    # Maps URL paths to handlers
 │   │       ├── schemas.ts  # JSON Input Validation (Typebox)
 │   │       └── handler.ts  # The actual business logic
-│   ├── services/           # Reusable logic (Cloud storage wrappers)
+│   │       └── service.ts  
 │   ├── api.ts              # API Gateway entry point
 │   └── worker.ts           # Independent Background Worker script
 ├── prisma/
 │   └── schema.prisma       # Database schema definition
 ├── .env                    # Environment variables
 └── package.json
+```
+
+## How to run
+1. clone the project
+```text
+git clone [project_git_url]
+```
+2. initiate prisma with whatever PostgresSQL host of your choice
+```text
+prisma generate
+```
+3. run it
+```text
+npm run dev:api
+```
+now it should be available on `localhost:3000`. I plan to push this on prod once all the essential parts are completed.

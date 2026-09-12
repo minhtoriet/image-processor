@@ -31,7 +31,7 @@ image-processing-backend/
 │   ├── routes/             # Feature-based endpoint modules
 │   │   └── images/
 │   │       ├── index.ts    # Maps URL paths to handlers
-│   │       ├── schemas.ts  # JSON Input Validation (Ajv)
+│   │       ├── schemas.ts  # JSON Input Validation (Typebox)
 │   │       └── handler.ts  # The actual business logic
 │   ├── services/           # Reusable logic (Cloud storage wrappers)
 │   ├── api.ts              # API Gateway entry point

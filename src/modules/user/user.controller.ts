@@ -3,13 +3,13 @@ import { createUser } from "./user.service";
 import type { RegisterUserDto } from "./user.schema";
 
 export async function registerUserHandler(
-    request:FastifyRequest<{ Body:RegisterUserDto }>, 
-    reply:FastifyReply){
-    
-    try{
+    request: FastifyRequest<{ Body: RegisterUserDto }>,
+    reply: FastifyReply) {
+
+    try {
         const user = await createUser(request.body);
         return reply.code(201).send(user);
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return reply.code(500).send({
             statusCode: 500,

@@ -1,19 +1,23 @@
 // App entry point (Stitches plugins and routes together)
 
+import 'dotenv/config';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
-import { Queue } from 'bullmq';
-import 'dotenv/config';
 import { prisma } from './plugins/prisma';
 import userRoutes from './modules/user/user.route';
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { SetErrorFunction, DefaultErrorFunction } from '@sinclair/typebox/errors'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
+import { rawRedisClient, imageQueue } from './plugins/redis';
+import { Queue } from 'bullmq';
+
 
 declare module 'fastify' {
   interface FastifyInstance {
-    prisma: typeof prisma;
+    prisma: typeof prisma,
+    redis: typeof rawRedisClient,
+    imageQueue: Queue,
   }
 }
 
@@ -23,23 +27,42 @@ SetErrorFunction((param) => {
 
 // 2. Create the Fastify Plugin
 // fp (fastify-plugin) ensures this decoration is available globally across all your routes
+// ex: 
+// export async function imageRoutes(fastify: FastifyInstance) {
+//   fastify.post('/upload', async (request, reply) => {
+//     // 1. Use decorated Prisma
+//     const imageRecord = await fastify.prisma.image.create({
+//       data: { status: 'PENDING' },
+//     });
+//     // 2. Use decorated BullMQ Queue
+//     await fastify.imageQueue.add('process-image', {
+//       imageId: imageRecord.id,
+//     });
+//     return { success: true, id: imageRecord.id };
+//   });
+// }
 const prismaPlugin = fp(async (fastify, options) => {
-  // Attach the Prisma instance to Fastify
   fastify.decorate('prisma', prisma);
-  // Gracefully disconnect from the database when the server shuts down
   fastify.addHook('onClose', async (server) => {
     await server.prisma.$disconnect();
   });
 });
-// 1. Instantiate Fastify with built-in Pino logger enabled
+const redisPlugin = fp(async (fastify) => {
+  if (!rawRedisClient.isOpen) {
+    await rawRedisClient.connect();
+  }
+  fastify.decorate('redis', rawRedisClient);
+  fastify.decorate('imageQueue', imageQueue);
+  fastify.addHook('onClose', async (server) => {
+    await server.imageQueue.close();
+    await server.redis.quit();
+  });
+});
+
 const app = Fastify({
   logger: true
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-// 2. Setup your message queue connection
-// const imageQueue = new Queue('image-processing-queue', {
-//   connection: { url: process.env.REDIS_URL || 'redis://127.0.0.1:6379' }
-// });
 
 //healthcheck
 app.get("/healthcheck", async function (request, reply) {
@@ -81,6 +104,7 @@ app.get('/api/image-jobs/count', async (request, reply) => {
 const startServer = async () => {
   try {
     await app.register(prismaPlugin);
+    await app.register(redisPlugin);
     await app.register(fastifySwagger, {
       openapi: {
         info: {

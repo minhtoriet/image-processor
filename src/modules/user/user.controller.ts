@@ -30,12 +30,12 @@ export async function loginUserHandler(
         if (!user) {
             return reply.code(401).send({error: 'invalid email or password'});
         }
-        const isCorrectPassword = checkPassword(request.body.password, user.password);
+        const isCorrectPassword = await checkPassword(request.body.password, user.password);
         if (!isCorrectPassword) {
             return reply.code(401).send({error: 'invalid email or password'});
-        }
+        } 
         const { password, ...rest } = user;
-        return { accessToken: app.jwt.sign(rest)};
+        return reply.code(200).send({ accessToken: app.jwt.sign(rest)});
     } catch (err) {
         console.log(err);
         return reply.code(500).send({

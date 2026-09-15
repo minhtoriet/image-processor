@@ -8,7 +8,7 @@ import {
 } from './image.service';
 import type { ImageJobResponseDto } from "./image.schema";
 
-const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/jpg']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function imageUploadHandler(

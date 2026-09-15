@@ -10,5 +10,5 @@ export async function checkPassword(candidatePassword:string,hashedPass:string){
     if (match) {
         return true;
     }
-    return false;
+    else return false;
 }

@@ -18,7 +18,7 @@ async function userRoutes(app: FastifyInstance) {
         schema: {
             body: loginUserSchema,
             response: {
-                201: loginUserResponseSchema,
+                200: loginUserResponseSchema,
                 401: Type.Object({ error: Type.String() }),
                 500: errorResponseSchema,
             }

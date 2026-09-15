@@ -11,7 +11,7 @@ import { Queue } from 'bullmq';
 import { rawRedisClient, imageQueue } from './lib/redis';
 import { prismaPlugin } from './plugins/prisma';
 import { redisPlugin } from './plugins/redis';
-import multipart from 'fastify';
+import multipart from '@fastify/multipart';
 import { imageRoutes } from './modules/image/image.route';
 import { fastifyJwt } from '@fastify/jwt';
 
@@ -62,6 +62,7 @@ const startServer = async () => {
         fileSize: 5 * 1024 * 1024, // 5MB limit
       },
     });
+    console.log('has multipart parser:', app.hasContentTypeParser('multipart/form-data'));
     await app.register(fastifyJwt,{
       secret: process.env.SECRET_KEY!,
     });

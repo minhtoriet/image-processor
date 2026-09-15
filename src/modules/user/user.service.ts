@@ -1,6 +1,12 @@
-import { prisma } from "../../plugins/prisma";
+import { prisma } from "../../lib/prisma";
 import { hashPassword } from "../hash";
-import { type RegisterUserDto } from "./user.schema";
+import { type LoginUserDto, type RegisterUserDto } from "./user.schema";
+
+export class UserServiceError extends Error {
+    constructor(message: string, public statusCode: 400 | 500) {
+        super(message);
+    }
+}
 
 export async function createUser(input: RegisterUserDto) {
     const { password, ...rest } = input;
@@ -10,4 +16,12 @@ export async function createUser(input: RegisterUserDto) {
         data: { ...rest, password: hash }
     });
     return user;
+}
+
+export async function findUserByEmail(email: string){
+    return prisma.user.findUnique({
+        where: {
+            email: email,
+        }
+    });
 }

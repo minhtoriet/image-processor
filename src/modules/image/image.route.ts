@@ -1,19 +1,26 @@
 // Maps URL paths to handlers
 // routes/images.ts
 import type { FastifyInstance } from "fastify";
+import { ImageJobResponseSchema } from "./image.schema";
+import { Type } from '@sinclair/typebox'
+import { errorResponseSchema } from "../error.schema";
+import { imageUploadHandler } from "./image.controller";
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
+
+const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads');
+
 
 export async function imageRoutes(fastify: FastifyInstance) {
-  fastify.post('/upload', async (request, reply) => {
-    // 1. Use decorated Prisma
-    const imageRecord = await fastify.prisma.imageJob.create({
-      data: {  },
-    });
-
-    // 2. Use decorated BullMQ Queue
-    await fastify.imageQueue.add('process-image', {
-      imageId: imageRecord.id,
-    });
-
-    return { success: true, id: imageRecord.id };
-  });
+  await mkdir(UPLOAD_DIR, {recursive : true})
+  fastify.post('/upload', {
+    schema: {
+      summary: 'upload an image',
+      response: {
+        201: ImageJobResponseSchema,
+        400: Type.Object({ error: Type.String() }),
+        500: errorResponseSchema,
+      }
+    }
+  },imageUploadHandler);
 }

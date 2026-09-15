@@ -1,10 +1,11 @@
 import type { FastifyInstance } from "fastify";
-import { registerUserHandler } from './user.controller';
+import { registerUserHandler, loginUserHandler } from './user.controller';
 import { errorResponseSchema } from '../error.schema'
-import { registerUserSchema, registerUserResponseSchema } from './user.schema'
+import { registerUserSchema, registerUserResponseSchema, loginUserSchema, loginUserResponseSchema } from './user.schema'
+import { Type } from "@sinclair/typebox";
 
 async function userRoutes(app: FastifyInstance) {
-    app.post('/', {
+    app.post('/register', {
         schema: {
             body: registerUserSchema,
             response: {
@@ -13,6 +14,16 @@ async function userRoutes(app: FastifyInstance) {
             },
         },
     }, registerUserHandler);
+    app.post('/login', {
+        schema: {
+            body: loginUserSchema,
+            response: {
+                201: loginUserResponseSchema,
+                401: Type.Object({ error: Type.String() }),
+                500: errorResponseSchema,
+            }
+        }
+    }, loginUserHandler);
 }
 
 export default userRoutes;

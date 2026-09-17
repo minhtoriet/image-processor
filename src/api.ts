@@ -20,6 +20,7 @@ declare module 'fastify' {
     prisma: typeof prisma;
     redis: typeof rawRedisClient;
     imageQueue: Queue;
+    auth: any;
   }
 }
 
@@ -83,7 +84,7 @@ const startServer = async () => {
       },
     })
     await app.register(userRoutes, { prefix: '/api/users' });
-    await app.register(imageRoutes, {prefix: '/api/images'})
+    await app.register(imageRoutes, {prefix: '/api/images'});
     await app.listen({ port: 3000 });
     console.log('Server listening on http://localhost:3000');
   } catch (err) {

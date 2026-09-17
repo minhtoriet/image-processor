@@ -1,1 +1,1 @@
-export const processImageToAscii = (imgPath : string) =>{};
+export const processImageToAscii = async (imgPath : string) =>{};

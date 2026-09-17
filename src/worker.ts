@@ -4,6 +4,7 @@ import { Worker, Job } from 'bullmq';
 import { connection } from './lib/redis';
 import { prisma } from './lib/prisma';
 import { processImageToAscii } from './services/ascii.service';
+import { getSignedDownloadUrl } from './services/storage.service';
 
 const worker = new Worker(
   'image-queue',
@@ -13,9 +14,9 @@ const worker = new Worker(
       where: { id: job.data.jobId },
       data: { status: 'PROCESSING' }
     });
-
+    
     // 2. Perform CPU math
-    const asciiResult = await processImageToAscii(job.data.imagePath);
+    const asciiResult = await processImageToAscii(await getSignedDownloadUrl(job.data.imagePath, 3600));
 
     // 3. Update DB status to COMPLETED
     await prisma.imageJob.update({

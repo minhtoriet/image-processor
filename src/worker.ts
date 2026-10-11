@@ -4,24 +4,44 @@ import { Worker, Job } from 'bullmq';
 import { connection } from './lib/redis';
 import { prisma } from './lib/prisma';
 import { processImageToAscii } from './services/ascii.service';
-import { getSignedDownloadUrl } from './services/storage.service';
+import { getFile, uploadFile } from './services/storage.service';
+import { randomUUID } from 'node:crypto';
 
 const worker = new Worker(
   'image-queue',
   async (job) => {
+
+    const { jobId, originalImageDir } = job.data;
     // 1. Update DB status to PROCESSING
     await prisma.imageJob.update({
-      where: { id: job.data.jobId },
+      where: { id: jobId },
       data: { status: 'PROCESSING' }
     });
-    
-    // 2. Perform CPU math
-    const asciiResult = await processImageToAscii(await getSignedDownloadUrl(job.data.imagePath, 3600));
 
-    // 3. Update DB status to COMPLETED
+    const original = await getFile(originalImageDir);
+    const uuidKey = randomUUID();
+    const outputImageKey = `output/image/${uuidKey}.webp`;
+    const outputAsciiKey = `output/ascii/${uuidKey}.txt`;
+    // 2. Perform CPU math
+    try {
+      const { imageResult, asciiResult } = await processImageToAscii(original);
+      await uploadFile(outputAsciiKey, asciiResult, 'text/plain');
+      await uploadFile(outputImageKey, imageResult, 'image/webp');
+    }
+    catch (err) {
+      console.log(err);
+      await prisma.imageJob.update({ where: { id: jobId }, data: { status: 'FAILED' } });
+      throw err;
+    }
+
+    // 3. Update DB status to COMPLETED & save output keys
     await prisma.imageJob.update({
       where: { id: job.data.jobId },
-      data: { status: 'COMPLETED', resultDir: asciiResult }
+      data: {
+        status: 'COMPLETED',
+        resultTextUrl: outputAsciiKey,
+        resultImageUrl: outputImageKey,
+      }
     });
   },
   { connection: connection }
@@ -29,9 +49,9 @@ const worker = new Worker(
 
 worker.run();
 worker.on('completed', (job: Job, returnvalue: any) => {
-    // Do something with the return value.
-    console.log(`Job ${job.id} completed successfully`);
+  // Do something with the return value.
+  console.log(`Job ${job.id} completed successfully`);
 });
 worker.on('error', err => {
-    console.error(err);
+  console.error(err);
 });

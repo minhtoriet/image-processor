@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const s3 = new S3Client({
@@ -22,6 +22,21 @@ export async function uploadFile(key: string, body: Buffer, contentType: string)
     }));
     return key; // store this key in Postgres, not a full URL
 }
+
+export async function deleteFile(key: string) {
+    await s3.send(new DeleteObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+    }));
+}
+
+export async function getFile(key: string){
+    const res = await s3.send(new GetObjectCommand({Bucket: BUCKET, Key: key}));
+    if (!res.Body) throw new Error(`empty body for key ${key}`);
+    const bytes = await res.Body.transformToByteArray();
+    return Buffer.from(bytes);
+}
+
 // Keys (jobs/abc123/result.png) are stable forever; 
 // URLs (especially signed ones) expire or change 
 // if you switch bucket setups later. Generate the actual URL on read, 

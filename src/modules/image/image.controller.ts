@@ -1,10 +1,10 @@
 // The actual controller logic
 import { type FastifyRequest, type FastifyReply } from "fastify";
 import {
-  saveFileToDisk,
-  createImageJob,
-  enqueueImageProcessing,
-  ImageServiceError,
+    saveFileToStorage,
+    createImageJob,
+    enqueueImageProcessing,
+    ImageServiceError,
 } from './image.service';
 import type { ImageJobResponseDto } from "./image.schema";
 
@@ -15,34 +15,34 @@ export async function imageUploadHandler(
     request: FastifyRequest,
     reply: FastifyReply) {
 
-    const data = await request.file({limits: {fileSize : MAX_FILE_SIZE}});
+    const data = await request.file({ limits: { fileSize: MAX_FILE_SIZE } });
     if (!data) {
-        return reply.code(400).send({error: 'No file uploaded'});
+        return reply.code(400).send({ error: 'No file uploaded' });
     }
     if (!ALLOWED_MIME_TYPES.has(data.mimetype)) {
-        return reply.code(400).send({error: `File extension: ${data.mimetype} not supported`});
+        return reply.code(400).send({ error: `File extension: ${data.mimetype} not supported` });
     }
     try {
-        const { storedFilename, destPath } = await saveFileToDisk(data);
+        const { storedFileName, destPath } = await saveFileToStorage(data);
         const job = await createImageJob({
-            userId: '60062713-cec8-48aa-9c9e-52604ea54dc4', 
+            userId: '60062713-cec8-48aa-9c9e-52604ea54dc4',
             presetId: 1,
-            originalImageDir: destPath, 
+            originalImageDir: destPath,
         });
         await enqueueImageProcessing(request.server.imageQueue, job.id, destPath);
 
-        const responseBody : ImageJobResponseDto = {
+        const responseBody: ImageJobResponseDto = {
             id: job.id,
-            filename: storedFilename,
-            url : destPath,
+            filename: storedFileName,
+            url: destPath,
             createdAt: job.createdAt.toISOString(),
         }
         return reply.code(201).send(responseBody);
-    } catch (err){
-        if (err instanceof ImageServiceError){
-            return reply.code(err.statusCode).send({error: err.message});
+    } catch (err) {
+        if (err instanceof ImageServiceError) {
+            return reply.code(err.statusCode).send({ error: err.message });
         }
         request.log.error(err);
-        return reply.code(500).send({error: 'Internal server error'});
+        return reply.code(500).send({ error: 'Internal server error' });
     }
 };

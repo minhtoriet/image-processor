@@ -1,34 +1,33 @@
 import { prisma } from '../../lib/prisma';
 import type { Queue } from 'bullmq';
 import type { MultipartFile } from '@fastify/multipart';
-import { pipeline } from 'node:stream/promises';
-import { createWriteStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-
-const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads');
+import { uploadFile, deleteFile, getFile } from '../../services/storage.service';
 
 export class ImageServiceError extends Error {
-    constructor(message: string, public statusCode: 400 | 500) {
+    constructor(message: string, public statusCode: 400 | 413 | 500) {
         super(message);
     }
 }
 
-export async function saveFileToDisk(file: MultipartFile) {
+export async function saveFileToStorage(file: MultipartFile) {
     const ext = path.extname(file.filename) || '';
-    const storedFilename = `${randomUUID()}${ext}`;
-    const destPath = path.join(UPLOAD_DIR, storedFilename);
+    const storedKey = `uploads/${randomUUID()}${ext}`;
 
-    await pipeline(file.file, createWriteStream(destPath));
-
-    // fastify/multipart flags this on the stream once the byte limit is hit
-    if (file.file.truncated) {
-        throw new ImageServiceError('File exceeds max allowed size', 400);
+    try{
+        const buffer = await file.toBuffer();
+        await uploadFile(storedKey, buffer, file.mimetype);
+    }
+    catch (err: any){        
+        if (err.code === 'FST_REQ_FILE_TOO_LARGE') {
+            throw new ImageServiceError('File exceeds max allowed size', 413);
+        }
+        throw err; 
     }
 
     //const { size } = await stat(destPath);
-    return { storedFilename, destPath };
+    return { storedFileName: storedKey, destPath: storedKey };
 }
 
 export async function createImageJob(
@@ -52,5 +51,5 @@ export async function enqueueImageProcessing(
     jobId: number,
     filePath: string,
 ) {
-    await queue.add('process-image', { jobId: jobId, filePath });
+    await queue.add('process-image', { jobId: jobId, originalImageDir: filePath });
 }

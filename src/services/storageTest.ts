@@ -1,7 +1,7 @@
 import { uploadFile, getFile, getSignedDownloadUrl, deleteFile } from './storage.service';
 
 console.log('test begin');
-await uploadFile("test.txt", Buffer.from("hello"), "text/plain");
+await uploadFile("test.txt", Buffer.from("hello motherfucker"), "text/plain");
 console.log('upload completed');
 const url = await getSignedDownloadUrl('test.txt',3600);
 console.log(`successfully fetched url: ${url}\n`);

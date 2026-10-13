@@ -20,13 +20,13 @@ const worker = new Worker(
 
     const original = await getFile(originalImageDir);
     const uuidKey = randomUUID();
-    const outputImageKey = `output/image/${uuidKey}.webp`;
+    const outputImageKey = `output/image/${uuidKey}.png`;
     const outputAsciiKey = `output/ascii/${uuidKey}.txt`;
     // 2. Perform CPU math
     try {
       const { imageResult, asciiResult } = await processImageToAscii(original);
       await uploadFile(outputAsciiKey, asciiResult, 'text/plain');
-      await uploadFile(outputImageKey, imageResult, 'image/webp');
+      await uploadFile(outputImageKey, imageResult, 'image/png');
     }
     catch (err) {
       console.log(err);

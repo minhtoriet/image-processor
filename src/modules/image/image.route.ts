@@ -24,7 +24,8 @@ export async function imageRoutes(app: FastifyInstance) {
         201: ImageJobResponseSchema,
         400: Type.Object({ error: Type.String() }),
         500: errorResponseSchema,
-      }
+      },
+      security:[{bearerAuth:[]}]
     },
     preHandler: [app.auth],
   },imageUploadHandler);

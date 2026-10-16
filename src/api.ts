@@ -1,28 +1,18 @@
 // App entry point (Stitches plugins and routes together)
 import 'dotenv/config';
 import Fastify, { type FastifyReply, type FastifyRequest } from 'fastify';
-import { prisma } from './lib/prisma';
 import userRoutes from './modules/user/user.route';
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { SetErrorFunction, DefaultErrorFunction } from '@sinclair/typebox/errors'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import { Queue } from 'bullmq';
-import { rawRedisClient } from './lib/redis';
 import { prismaPlugin } from './plugins/prisma';
 import { redisPlugin } from './plugins/redis';
 import multipart from '@fastify/multipart';
 import { imageRoutes } from './modules/image/image.route';
 import { fastifyJwt } from '@fastify/jwt';
+import cookie from '@fastify/cookie';
 
-declare module 'fastify' {
-  interface FastifyInstance {
-    prisma: typeof prisma;
-    redis: typeof rawRedisClient;
-    imageQueue: Queue;
-    auth: any;
-  }
-}
 
 SetErrorFunction((param) => {
   return param.schema.errorMessage ?? DefaultErrorFunction(param)
@@ -37,7 +27,7 @@ app.decorate('auth', async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     await request.jwtVerify();
   } catch (err: any) {
-    const expired = err.code === 'FST_JWT_AUTHORIZATION_TOKEN_EXPIRED';
+    const expired = (err as {code?:string}).code === 'FST_JWT_AUTHORIZATION_TOKEN_EXPIRED';
     return reply.code(401).send({
       statusCode: 401,
       error: 'Unauthorized',
@@ -76,7 +66,9 @@ const startServer = async () => {
     await app.register(fastifyJwt, {
       secret: process.env.SECRET_KEY!,
       sign: { expiresIn: '2m' },
+      cookie: { cookieName: 'token', signed: false },
     });
+    await app.register(cookie);
     await app.register(fastifySwagger, {
       openapi: {
         info: {

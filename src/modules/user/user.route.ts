@@ -1,8 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { registerUserHandler, loginUserHandler } from './user.controller';
+import { registerUserHandler, loginUserHandler, logoutUserHandler, getCurrentUserHandler } from './user.controller';
 import { errorResponseSchema } from '../error.schema'
 import { registerUserSchema, registerUserResponseSchema, loginUserSchema, loginUserResponseSchema } from './user.schema'
-import { Type } from "@sinclair/typebox";
 
 async function userRoutes(app: FastifyInstance) {
     app.post('/register', {
@@ -10,6 +9,7 @@ async function userRoutes(app: FastifyInstance) {
             body: registerUserSchema,
             response: {
                 201: registerUserResponseSchema,
+                409: errorResponseSchema,
                 500: errorResponseSchema
             },
         },
@@ -19,11 +19,30 @@ async function userRoutes(app: FastifyInstance) {
             body: loginUserSchema,
             response: {
                 200: loginUserResponseSchema,
-                401: Type.Object({ error: Type.String() }),
+                401: errorResponseSchema,
                 500: errorResponseSchema,
             }
         }
     }, loginUserHandler);
+    app.post('/logout', {
+        schema: {
+            response: {
+                204: { type: 'null' },
+                401: errorResponseSchema,
+                500: errorResponseSchema,
+            }
+        }
+    }, logoutUserHandler);
+    app.get('/me', {
+        onRequest: [app.auth],
+        schema: {
+            response: {
+                200: loginUserResponseSchema,
+                401: errorResponseSchema,
+            }
+        }
+    }, getCurrentUserHandler);
 }
+
 
 export default userRoutes;

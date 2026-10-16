@@ -23,8 +23,10 @@ export const loginUserSchema = Type.Object({
 export const registerUserResponseSchema = Type.Object({
     email: Type.String()
 });
-export const loginUserResponseSchema = Type.Object({
-    accessToken: Type.String()
+export const currentUserResponseSchema = Type.Object({
+    id: Type.String(),
+    email: Type.String(),
+    createdAt: Type.String({ format: 'date-time' }),
 });
 // Extract the inferred TypeScript interface automatically
 export type RegisterUserDto = Static<typeof registerUserSchema>

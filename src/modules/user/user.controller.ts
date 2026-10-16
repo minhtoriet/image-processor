@@ -12,7 +12,11 @@ export async function registerUserHandler(
     try {
         const user = await findUserByEmail(request.body.email);
         if (user) {
-            return reply.code(409).send({ error: 'User already exists' });
+            return reply.code(409).send({
+                statusCode: 409,
+                error: 'User already exists',
+                message: 'A user with this email already exists',
+            });
         }
         const newUser = await createUser(request.body);
         return reply.code(201).send(newUser);
@@ -32,11 +36,19 @@ export async function loginUserHandler(
     try {
         const user = await findUserByEmail(request.body.email);
         if (!user) {
-            return reply.code(401).send({ error: 'invalid email or password' });
+            return reply.code(401).send({
+                statusCode: 401,
+                error: 'Invalid email or password',
+                message: 'The email or password you entered is incorrect',
+            });
         }
         const isCorrectPassword = await checkPassword(request.body.password, user.password);
         if (!isCorrectPassword) {
-            return reply.code(401).send({ error: 'invalid email or password' });
+            return reply.code(401).send({
+                statusCode: 401,
+                error: 'Invalid email or password',
+                message: 'The email or password you entered is incorrect',
+            });
         }
         const { id, email } = user;
         const token = app.jwt.sign({ id: id, email: email });

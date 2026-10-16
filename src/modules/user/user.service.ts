@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { hashPassword } from "../hash";
-import { type LoginUserDto, type RegisterUserDto } from "./user.schema";
+import type { RegisterUserDto } from "./user.schema";
 
 export class UserServiceError extends Error {
     constructor(message: string, public statusCode: 400 | 500) {
@@ -30,6 +30,7 @@ export async function findUserById(id: string){
     return prisma.user.findUnique({
         where: {
             id: id,
+            omit: { password: true },
         }
     });
 }

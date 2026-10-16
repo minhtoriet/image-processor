@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { registerUserHandler, loginUserHandler, logoutUserHandler, getCurrentUserHandler } from './user.controller';
 import { errorResponseSchema } from '../error.schema'
-import { registerUserSchema, registerUserResponseSchema, loginUserSchema, loginUserResponseSchema } from './user.schema'
+import { registerUserSchema, registerUserResponseSchema, loginUserSchema, currentUserResponseSchema } from './user.schema'
 
 async function userRoutes(app: FastifyInstance) {
     app.post('/register', {
@@ -18,7 +18,7 @@ async function userRoutes(app: FastifyInstance) {
         schema: {
             body: loginUserSchema,
             response: {
-                200: loginUserResponseSchema,
+                204: { type: 'null' },
                 401: errorResponseSchema,
                 500: errorResponseSchema,
             }
@@ -37,7 +37,7 @@ async function userRoutes(app: FastifyInstance) {
         onRequest: [app.auth],
         schema: {
             response: {
-                200: loginUserResponseSchema,
+                200: currentUserResponseSchema,
                 401: errorResponseSchema,
             }
         }

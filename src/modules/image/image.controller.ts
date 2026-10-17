@@ -5,8 +5,10 @@ import {
     createImageJob,
     enqueueImageProcessing,
     ImageServiceError,
+    findJobForUser,
 } from './image.service';
-import type { ImageJobResponseDto } from "./image.schema";
+import type { ImageJobResponseDto, JobParamsDto } from "./image.schema";
+import { getSignedDownloadUrl } from "../../services/storage.service";
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/jpg']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -25,8 +27,8 @@ export async function imageUploadHandler(
     try {
         const { storedFileName, destPath } = await saveFileToStorage(data);
         const job = await createImageJob({
-            userId: '60062713-cec8-48aa-9c9e-52604ea54dc4',
-            presetId: 1,
+            userId: request.user.id,
+            presetId: 1, // assume this is the only preset, for ascii gen
             originalImageDir: destPath,
         });
         await enqueueImageProcessing(request.server.imageQueue, job.id, destPath);
@@ -46,3 +48,22 @@ export async function imageUploadHandler(
         return reply.code(500).send({ error: 'Internal server error' });
     }
 };
+
+export async function getJobHandler(
+    request: FastifyRequest<{Params: JobParamsDto}>,
+    reply: FastifyReply
+) {
+    const {id} = request.params;
+    const job = await findJobForUser(id);
+    if (!job) return reply.code(404).send({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Job not found'
+    });
+    return {
+        id: job.id,
+        status: job.status,
+        imageUrl: job.resultImageUrl ? await getSignedDownloadUrl(job.resultImageUrl): null,
+        textUrl: job.resultTextUrl ? await getSignedDownloadUrl(job.resultTextUrl): null,
+    }
+}

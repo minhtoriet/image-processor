@@ -13,11 +13,9 @@ import { imageRoutes } from './modules/image/image.route';
 import { fastifyJwt } from '@fastify/jwt';
 import cookie from '@fastify/cookie';
 
-
 SetErrorFunction((param) => {
   return param.schema.errorMessage ?? DefaultErrorFunction(param)
 })
-
 
 export const app = Fastify({
   logger: true
@@ -51,7 +49,6 @@ app.post('/api/image-jobs/count',
     });
   });
 
-
 const startServer = async () => {
   try {
     await app.register(prismaPlugin);
@@ -65,7 +62,7 @@ const startServer = async () => {
     console.log('has multipart parser:', app.hasContentTypeParser('multipart/form-data'));
     await app.register(fastifyJwt, {
       secret: process.env.SECRET_KEY!,
-      sign: { expiresIn: '2m' },
+      sign: { expiresIn: '1h' },
       cookie: { cookieName: 'token', signed: false },
     });
     await app.register(cookie);

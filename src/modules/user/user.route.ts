@@ -39,8 +39,9 @@ async function userRoutes(app: FastifyInstance) {
             response: {
                 200: currentUserResponseSchema,
                 401: errorResponseSchema,
-            }
-        }
+            },
+            security: [{ bearerAuth: [] }],
+        },
     }, getCurrentUserHandler);
 }
 

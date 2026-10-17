@@ -18,7 +18,7 @@ export async function createUser(input: RegisterUserDto) {
     return user;
 }
 
-export async function findUserByEmail(email: string){
+export async function findUserByEmail(email: string) {
     return prisma.user.findUnique({
         where: {
             email: email,
@@ -26,11 +26,13 @@ export async function findUserByEmail(email: string){
     });
 }
 
-export async function findUserById(id: string){
+export async function findUserById(id: string) {
     return prisma.user.findUnique({
         where: {
             id: id,
-            omit: { password: true },
-        }
+        },
+        omit: {
+            password: true
+        },
     });
 }

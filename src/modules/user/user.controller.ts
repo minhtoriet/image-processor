@@ -58,7 +58,7 @@ export async function loginUserHandler(
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 2 * 60, // 2 minutes
+                maxAge: 3600 , // 1 hour
             })
             .code(204)
             .send();

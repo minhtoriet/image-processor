@@ -1,18 +1,12 @@
 // Maps URL paths to handlers
 // routes/images.ts
 import type { FastifyInstance } from "fastify";
-import { ImageJobResponseSchema } from "./image.schema";
+import { ImageJobResponseSchema, JobParamsSchema, JobResponseSchema, type JobParamsDto } from "./image.schema";
 import { Type } from '@sinclair/typebox'
 import { errorResponseSchema } from "../error.schema";
-import { imageUploadHandler } from "./image.controller";
-import { mkdir } from 'node:fs/promises';
-import path from 'node:path';
-
-const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads');
-
+import { getJobHandler, imageUploadHandler } from "./image.controller";
 
 export async function imageRoutes(app: FastifyInstance) {
-  await mkdir(UPLOAD_DIR, {recursive : true})
   app.post('/upload', {
     schema: {
       summary: 'upload an image',
@@ -25,8 +19,21 @@ export async function imageRoutes(app: FastifyInstance) {
         400: Type.Object({ error: Type.String() }),
         500: errorResponseSchema,
       },
-      security:[{bearerAuth:[]}]
+      security: [{ bearerAuth: [] }]
     },
     preHandler: [app.auth],
-  },imageUploadHandler);
+  }, imageUploadHandler);
+
+  app.get<{ Params: JobParamsDto }>('/:id', {
+    preHandler: [app.auth],
+    schema: {
+      params: JobParamsSchema,
+      response: {
+        200: JobResponseSchema,
+        404: errorResponseSchema,
+        500: errorResponseSchema,
+      },
+      security: [{ bearerAuth: [] }],
+    }
+  }, getJobHandler);
 }

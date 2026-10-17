@@ -53,3 +53,11 @@ export async function enqueueImageProcessing(
 ) {
     await queue.add('process-image', { jobId: jobId, originalImageDir: filePath });
 }
+
+export async function findJobForUser(id : number) {
+    return await prisma.imageJob.findFirst({
+        where:{
+            id: id,
+        }
+    });
+}

@@ -202,9 +202,6 @@ There is no `build` script yet, so the `start:*` scripts have nothing to run unt
 
 ## Known gaps
 
-- **Upload ignores the logged-in user.** `image.controller.ts` creates jobs with a hardcoded `userId` and `presetId` instead of the authenticated user's id and a real preset.
-- **No way to fetch results yet.** There are no endpoints to get a job's status or download its outputs; `getSignedDownloadUrl` exists but is unused.
-- **Short sessions, no refresh.** Tokens and cookies last 2 minutes and there is no refresh flow.
 - **Presets unused.** `ProcessingPreset` is not read by the worker; output width is fixed at 100 columns.
 - **No tests**, and no `build` script.
 - `src/services/storageTest.ts` and `src/plugins/redisTest.ts` are manual smoke-test scripts, not part of the app.

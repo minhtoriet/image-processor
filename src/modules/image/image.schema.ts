@@ -17,7 +17,7 @@ export const JobResponseSchema = Type.Object({
   status: Type.String(),
   imageUrl: Type.Union([Type.String(),Type.Null()]),
   textUrl: Type.Union([Type.String(),Type.Null()]),
-})
+});
 
 export type JobParamsDto = Static<typeof JobParamsSchema>;
 export type JobResponseDto = Static<typeof JobResponseSchema>;

@@ -1,6 +1,6 @@
-import { prisma } from "../../lib/prisma";
-import { hashPassword } from "../hash";
-import type { RegisterUserDto } from "./user.schema";
+import { prisma } from "../../lib/prisma.ts";
+import { hashPassword } from "../hash.ts";
+import type { RegisterUserDto } from "./user.schema.ts";
 
 export class UserServiceError extends Error {
     constructor(message: string, public statusCode: 400 | 500) {

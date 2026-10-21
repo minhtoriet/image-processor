@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma.ts';
 
 export const prismaPlugin = fp(async (fastify, options) => {
   fastify.decorate('prisma', prisma);

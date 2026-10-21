@@ -1,15 +1,15 @@
 // App entry point (Stitches plugins and routes together)
 import 'dotenv/config';
 import Fastify, { type FastifyReply, type FastifyRequest } from 'fastify';
-import userRoutes from './modules/user/user.route';
+import userRoutes from './modules/user/user.route.ts';
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { SetErrorFunction, DefaultErrorFunction } from '@sinclair/typebox/errors'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import { prismaPlugin } from './plugins/prisma';
-import { redisPlugin } from './plugins/redis';
+import { prismaPlugin } from './plugins/prisma.ts';
+import { redisPlugin } from './plugins/redis.ts';
 import multipart from '@fastify/multipart';
-import { imageRoutes } from './modules/image/image.route';
+import { imageRoutes } from './modules/image/image.route.ts';
 import { fastifyJwt } from '@fastify/jwt';
 import cookie from '@fastify/cookie';
 

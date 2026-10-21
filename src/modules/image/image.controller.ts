@@ -6,9 +6,9 @@ import {
     enqueueImageProcessing,
     ImageServiceError,
     findJobForUser,
-} from './image.service';
-import type { ImageJobResponseDto, JobParamsDto } from "./image.schema";
-import { getSignedDownloadUrl } from "../../services/storage.service";
+} from './image.service.ts';
+import type { ImageJobResponseDto, JobParamsDto } from "./image.schema.ts";
+import { getSignedDownloadUrl } from "../../services/storage.service.ts";
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/jpg']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

@@ -1,10 +1,10 @@
 // Maps URL paths to handlers
 // routes/images.ts
 import type { FastifyInstance } from "fastify";
-import { ImageJobResponseSchema, JobParamsSchema, JobResponseSchema, type JobParamsDto } from "./image.schema";
+import { ImageJobResponseSchema, JobParamsSchema, JobResponseSchema, type JobParamsDto } from "./image.schema.ts";
 import { Type } from '@sinclair/typebox'
-import { errorResponseSchema } from "../error.schema";
-import { getJobHandler, imageUploadHandler } from "./image.controller";
+import { errorResponseSchema } from "../error.schema.ts";
+import { getJobHandler, imageUploadHandler } from "./image.controller.ts";
 
 export async function imageRoutes(app: FastifyInstance) {
   app.post('/upload', {

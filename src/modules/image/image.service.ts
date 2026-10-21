@@ -1,9 +1,9 @@
-import { prisma } from '../../lib/prisma';
+import { prisma } from '../../lib/prisma.ts';
 import type { Queue } from 'bullmq';
 import type { MultipartFile } from '@fastify/multipart';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { uploadFile } from '../../services/storage.service';
+import { uploadFile } from '../../services/storage.service.ts';
 
 export class ImageServiceError extends Error {
     constructor(message: string, public statusCode: 400 | 413 | 500) {

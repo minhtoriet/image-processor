@@ -1,10 +1,10 @@
 // Independent Background Worker script
 import 'dotenv/config';
 import { Worker, Job } from 'bullmq';
-import { connection } from './lib/redis';
-import { prisma } from './lib/prisma';
-import { processImageToAscii } from './services/ascii.service';
-import { getFile, uploadFile } from './services/storage.service';
+import { connection } from './lib/redis.ts';
+import { prisma } from './lib/prisma.ts';
+import { processImageToAscii } from './services/ascii.service.ts';
+import { getFile, uploadFile } from './services/storage.service.ts';
 import { randomUUID } from 'node:crypto';
 
 const worker = new Worker(

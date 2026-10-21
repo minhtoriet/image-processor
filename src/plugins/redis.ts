@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { rawRedisClient, imageQueue } from '../lib/redis';
+import { rawRedisClient, imageQueue } from '../lib/redis.ts';
 
  // 2. Create the Fastify Plugin
 // fp (fastify-plugin) ensures this decoration is available globally across all your routes

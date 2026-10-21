@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { createUser, findUserByEmail, findUserById } from "./user.service";
-import type { LoginUserDto, RegisterUserDto } from "./user.schema";
-import { checkPassword } from "../hash";
-import { app } from "../../api";
+import { createUser, findUserByEmail, findUserById } from "./user.service.ts";
+import type { LoginUserDto, RegisterUserDto } from "./user.schema.ts";
+import { checkPassword } from "../hash.ts";
+import { app } from "../../api.ts";
 
 //plz use request.log.error(err) 
 export async function registerUserHandler(

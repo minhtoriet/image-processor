@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { registerUserHandler, loginUserHandler, logoutUserHandler, getCurrentUserHandler } from './user.controller';
-import { errorResponseSchema } from '../error.schema'
-import { registerUserSchema, registerUserResponseSchema, loginUserSchema, currentUserResponseSchema } from './user.schema'
+import { registerUserHandler, loginUserHandler, logoutUserHandler, getCurrentUserHandler } from './user.controller.ts';
+import { errorResponseSchema } from '../error.schema.ts'
+import { registerUserSchema, registerUserResponseSchema, loginUserSchema, currentUserResponseSchema } from './user.schema.ts'
 
 async function userRoutes(app: FastifyInstance) {
     app.post('/register', {

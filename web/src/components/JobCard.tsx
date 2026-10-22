@@ -20,7 +20,7 @@ export default function JobCard({ id }: { id: number }) {
                     {job.imageUrl && (<img src={job.imageUrl} alt={`ASCII art for job ${job.id}`} style={{ maxWidth: '100%' }} />)}
                     <p>
                         {job.imageUrl && (<a href={job.imageUrl} target='_blank' rel="noreferrer">Open PNG</a>)}
-                        {'.'}
+                        {' . '}
                         {job.textUrl && (<a href={job.textUrl} target='_blank' rel='nonreferrer'>Open Text</a>)}
                     </p>
                 </>

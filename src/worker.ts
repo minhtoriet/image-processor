@@ -44,7 +44,9 @@ const worker = new Worker(
       }
     });
   },
-  { connection: connection }
+  { connection: connection,
+    autorun: false,
+   }
 );
 
 worker.run();

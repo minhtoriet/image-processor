@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
-export default function LoginForm() {
+export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,6 +24,10 @@ export default function LoginForm() {
             <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
             <button type='submit'>Log in</button>
             {error && <p>{error}</p>}
+            <p>
+                No account yet? {' '}
+                <button type="button" onClick={onSwitch}>Register</button>
+            </p>
         </form>
     );
 }

@@ -4,7 +4,7 @@ Upload a picture, get back a **colored ASCII-art rendering** of it. Each pixel b
 
 Under the hood it is an asynchronous, queue-based backend: the API never does the heavy image work itself. It stores the upload, records a job, and hands the work to a separate worker process.
 
-> **Status: work in progress.** The backend pipeline (auth, upload, queue, worker, storage) works end to end. The React frontend is still the default Vite template, and a few things are stubbed. See [Current status](#current-status) and [Known gaps](#known-gaps).
+> **Status: Mostly done.** The backend pipeline (auth, upload, queue, worker, storage) works end to end. The React frontend is as barebone as it can get, and you can do me a favor by pulling a request to complete it (please no vibing bullshit, I could just do it myself). See [Current status](#current-status) and [Known gaps](#known-gaps).
 
 ## How it works
 
@@ -186,8 +186,6 @@ npm run dev
 | `npm run start:api` / `start:worker` | Run the compiled output from `dist/` |
 | `npm start` | Run API and worker together via `concurrently` |
 
-There is no `build` script yet, so the `start:*` scripts have nothing to run until one is added.
-
 ## Current status
 
 **Working**
@@ -196,12 +194,13 @@ There is no `build` script yet, so the `start:*` scripts have nothing to run unt
 - BullMQ job queue and a standalone worker with PROCESSING / COMPLETED / FAILED status tracking
 - Colored ASCII rendering (text + PNG) saved back to R2
 - Swagger documentation
+- Small React UIs
 
 **In progress**
-- Frontend UI: `web/` is still the default Vite + React template, with only a small fetch helper (`web/src/api.ts`) wired for cookie auth and 401 handling
+- Nothing. The UI is bad but that's intended. I'm done with UIs.
 
 ## Known gaps
 
 - **Presets unused.** `ProcessingPreset` is not read by the worker; output width is fixed at 100 columns.
-- **No tests**, and no `build` script.
+- **No tests**.
 - `src/services/storageTest.ts` and `src/plugins/redisTest.ts` are manual smoke-test scripts, not part of the app.
